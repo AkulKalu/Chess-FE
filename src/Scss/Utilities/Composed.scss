@@ -1,0 +1,12 @@
+@use './Basic.scss';
+
+.max {
+    @extend .h-100 ;
+    @extend .w-100;
+}
+.center {
+    @extend .flex;
+    @extend .col;
+    @extend .jcont-center;
+    @extend .aitm-center;
+}

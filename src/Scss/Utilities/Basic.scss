@@ -1,0 +1,51 @@
+.mk {
+    background-color: rgba(0, 0, 0, 0.486);
+}
+
+.h-100 {
+    height: 100%;
+}
+.w-100 {
+    width: 100%;
+}
+.h-50 {
+    height: 50%;
+}
+.w-50 {
+    width: 50%;
+}
+.h-75 {
+    height: 75%;
+}
+.w-75 {
+    width: 75%;
+}
+.max-port {
+    height: 100vh;
+    width: 100vw;
+}
+
+.flex {
+    display: flex;
+}
+.col {
+    flex-direction: column;
+}
+.aitm-center {
+    align-items: center;
+}
+.aitm-start {
+    align-items: flex-start;
+}
+.aitm-end {
+    align-items: flex-end;
+}
+.jcont-center {
+    justify-content: center;
+}
+.jcont-start {
+    justify-content: flex-start;
+}
+.jcont-end {
+    justify-content: flex-end;
+}
