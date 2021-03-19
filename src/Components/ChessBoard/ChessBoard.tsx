@@ -1,12 +1,20 @@
-import React from 'react';
+import React, { useContext  } from 'react';
 import ChessField  from '../ChessField/ChessField'
-import {fieldNotations} from '../../helpers/functions';
+import {checkFieldColor, getFieldNotations} from '../../helpers/functions';
+import { store } from '../../HOC/State/Provider'
+
+
 
 
 export default function ChessBoard() {
 
-    const fields = fieldNotations().map( (notation, i) => {
-            return <ChessField key={notation} notation={notation}></ChessField>
+    const {board} = useContext(store);
+    console.log(board);
+    
+    const setBlackField = checkFieldColor();
+    
+    const fields = getFieldNotations().map( (notation, i) => {
+            return <ChessField black = {setBlackField(i)}   key={notation} notation={notation}></ChessField>
         }
     )
 

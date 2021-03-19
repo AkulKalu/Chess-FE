@@ -1,13 +1,14 @@
 import React from 'react';
 
 interface ChessFieldProps {
-    notation : string
+    notation : string,
+    black : boolean
 }
 
 export default function ChessField(props : ChessFieldProps) {
+    let {black, notation} = props;
 
-
-    return <div className="field">
-        <span>{props.notation}</span>
+    return <div style={black ? {background: 'black'} : {}} className="field">
+        <span>{notation}</span>
     </div>  
 }
