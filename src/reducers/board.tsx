@@ -1,28 +1,15 @@
+import {ChessBoard} from "../ts/classes";
+import { BoardTable, DispatchAction } from "../ts/globalTypes";
 
-export const initialState : {} = {
-   
-};
+export const initialState : BoardTable = ChessBoard.createBoardTable();
 
-interface Action {
-    type : string,
-    payload : any
-}
 
-export const reducer = (state : {}, action : Action) => {
+
+export const reducer = (state : BoardTable, action : DispatchAction) => {
     const {type, payload } = action;
-   
-    switch (type) {
-      case 'NEW' :
-        let newState = {
-          ...payload
-        }
-
-        return newState;
-
     
-    default:
-      return state;
-    }
+    return state;
+    
   };
 
 
