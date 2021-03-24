@@ -5,9 +5,6 @@ interface ProviderProps {
     children : ReactNode
 }
 
-interface GlobalState {
-    board : any
-}
 
 type Context = {
     board : any

@@ -4,15 +4,11 @@ export interface Piece {
     type : string;
     boardPosition : string
     color : string;
-    board : any;
-
-    moveTo() : void;
-    takePiece() : void;
 }
 
 export interface DispatchAction {
     type : string,
-    payload : any,
+    payload : any[],
 }
 
 export interface Board {
@@ -20,6 +16,7 @@ export interface Board {
     pieceTakesPiece(piece1 : Piece, piece2 : Piece) : any;
     setPieces(white : string[], black :string[]) : any;
 }
+
 
 export interface BoardTable {
     [field : string] : null | Piece

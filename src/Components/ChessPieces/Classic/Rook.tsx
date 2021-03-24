@@ -31,7 +31,7 @@ export default function Rook() {
         stroke:'#ffffff',
         strokeLinejoin:'miter',
     } 
-    return <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="45" height="45">
+    return <svg xmlns="http://www.w3.org/2000/svg"  version="1.1" width="45" height="45">
                 <g style={style1}>
                 <path
                     d="M 9,39 L 36,39 L 36,36 L 9,36 L 9,39 z "
