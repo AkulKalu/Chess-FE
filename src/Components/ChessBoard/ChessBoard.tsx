@@ -9,6 +9,8 @@ import ChessPiece from '../ChessPieces/ChessPiece';
 
 export default function ChessBoard() {
     const {board} = useContext(store);
+    console.log(board);
+    
     const setBlackField = checkFieldColor();
     const fields = getFieldNotations().map( (notation, i) => {
             let piece = board.state[notation]

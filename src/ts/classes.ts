@@ -6,12 +6,16 @@ export class ChessPiece implements Piece {
     type : string;
     boardPosition : string
     color : string;
-    board : any
+    protected _board : BoardTable | null = null
 
-    constructor(type : string, boardPosition : string, color : string  ) {
+    constructor(type : string, boardPosition : string, color : string) {
         this.type = type;
         this.boardPosition = boardPosition;
         this.color = color;
+    }
+
+    set board(board : BoardTable) {
+        this._board = board;
     }
 
     static getStartPositions() : { boardTop : string[], boardBottom : string[]} {
@@ -50,6 +54,35 @@ export class ChessPiece implements Piece {
         }
     }
 }
+class ChessPieceFactory {
+    board : BoardTable | null = null;
+    boardPosition : string = '';
+
+    create(type : string, boardPosition : string, color : string) {
+        let piece = class extends ChessPiece {
+                canMoveTo: () => string[];
+                constructor() {
+                    super(type, boardPosition, color)
+                    this.canMoveTo = ChessPieceFactory.prototype.pawn
+                }
+        }
+        return piece
+        
+    }
+    pawn() {
+       let rank = Number(this.boardPosition[1]);
+       let file = this.boardPosition[0];
+       let pattern = [`${file}${rank + 1}`, `${file}${rank + 2}`];
+
+       return  pattern.filter( field => {
+                    return this.board[field] === null;
+                } )
+    }
+}
+
+
+
+
 
 export class Action implements DispatchAction {
     type : string;
@@ -79,12 +112,16 @@ export class ChessBoard implements Board {
         white.forEach(piece => {
             let type = piece[0];
             let position = piece.slice(1);
-            this.state[position] = new ChessPiece(type, position, 'white')
+            let chessPiece =  new ChessPiece(type, position, 'white')
+            this.state[position] = chessPiece;
+            chessPiece.board = this.state;
         })
         black.forEach(piece => {
             let type = piece[0];
             let position = piece.slice(1);
-            this.state[position] = new ChessPiece(type, position, 'black')
+            let chessPiece =   new ChessPiece(type, position, 'black');
+            this.state[position] = chessPiece;
+            chessPiece.board = this.state;
         })
     }
   
