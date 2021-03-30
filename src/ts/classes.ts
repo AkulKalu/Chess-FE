@@ -1,33 +1,47 @@
 import {Board, BoardTable, Piece, DispatchAction} from './globalTypes';
 import React from 'react';
-class PieceProperties {
-    type : string;
-    boardPosition : string
-    color : string;
+export class ChessPiece implements Piece {
+    type : string = '';
+    boardPosition : string = ''
+    color : string = '';
     ranks : string[] = ['1' , '2', '3' , '4' , '5' , '6' , '7', '8'];
     files : string[] = ['a','b','c','d','e','f','g','h'];
-    protected can : {moveTo : string[], take : string[]} ={
-        moveTo : [],
-        take : [],
+    protected _board : BoardTable = {};
+
+    constructor(type : string, boardPosition : string, color : string) {
+        this.boardPosition = boardPosition;
+        this.color = color;
+        this.type = type;
     }
-    protected _board : BoardTable | null = null
-    protected filterMovePattern(posibleMovments : string[]) : string[] {
-       for (let i = 0; i < posibleMovments.length; i++) {
-           let field = posibleMovments[i];
-           let onBoardIsEmpty = this._board[field];
-           if(!onBoardIsEmpty) {
-            return posibleMovments.slice(0, i)
-           } 
-       }
+
+    protected getMovementPattern(movementLines : string[][]) :  string[][] {
+        return movementLines.map(this.getEmptyFieldsInLine);
     }
-    protected filterPossibleTakes(possibleTakes : string[]) : string[] {
-        for (let i = 0; i < possibleTakes.length; i++) {
-            let field = possibleTakes[i];
-            let onBoardIsEmpty = this._board[field];
-            if(!onBoardIsEmpty) {
-                return [field]
+
+    protected getEmptyFieldsInLine(line : string[]) {
+        for (let i = 0; i < line.length; i++) {
+            let field = line[i];
+            let fieldPiece = this._board[field];
+            if(fieldPiece) {
+                return line.slice(0, i); 
             } 
         }
+        return line.slice();
+    }
+
+    protected getPossibleTakes(movementLines : string[][]) : string[][] {
+        return movementLines.map(this.getOpponentFieldsInLine);
+    }
+
+    protected getOpponentFieldsInLine(line : string[]) : string[] {
+        for (let i = 0; i < line.length; i++) {
+            let field = line[i];
+            let fieldPiece = this._board[field];
+            if(fieldPiece) {
+                return fieldPiece.color === this.color ? [] : [field]
+            } 
+        }
+        return [];
      }
 
     set board(board : BoardTable) {
@@ -45,15 +59,6 @@ class PieceProperties {
     get file() {
         return this.boardPosition[0];
     }
-}
-export class ChessPiece extends PieceProperties implements Piece  {
-    constructor(type : string, boardPosition : string, color : string) {
-        super()
-        this.type = type;
-        this.boardPosition = boardPosition;
-        this.color = color;
-    }
-
     static getStartPositions() : { boardTop : string[], boardBottom : string[]} {
         let notations = ChessBoard.getFieldNotations();
         let topOfBoard = notations.filter(filterNotationsByRank(['7', '8']));
@@ -90,53 +95,128 @@ export class ChessPiece extends PieceProperties implements Piece  {
         }
     }
 }
-class ChessPieceFactory extends PieceProperties {
-    
-    constructor() {
-        super();
-    }
 
-    create(type : string, boardPosition : string, color : string) {
-        let piece = class extends ChessPiece {
-                canMoveTo: () => string[];
-                constructor() {
-                    super(type, boardPosition, color)
-                    this.canMoveTo = ChessPieceFactory.prototype.pawn
-                }
-        }
+export class Pawn extends ChessPiece {
+    constructor(type : string, boardPosition : string, color : string) {
+        super(type, boardPosition, color);
+    }
+    canMoveTo() {
+        let possibleMovments = [`${this.file}${this.ranks[this.boardY + 1]}`];
+        if(this.rank === '2') {
+             possibleMovments.push(`${this.file}${this.ranks[this.boardY + 2]}`);
+        } 
+        return this.getMovementPattern([possibleMovments]);
+     }
+
+     canTake() {
+        let possibleTakes = [`${this.files[this.boardX - 1]}${this.ranks[this.boardY + 1]}`,
+                             `${this.files[this.boardX + 1]}${this.ranks[this.boardY + 1]}`];
+        return this.getPossibleTakes([possibleTakes]);
+     }
+}
+export class Bishop extends ChessPiece {
+    constructor(type : string, boardPosition : string, color : string) {
+        super(type, boardPosition, color);
+    }
+    canMoveTo() {
+      
+     }
+
+     canTake() {
+       
+     }
+}
+export class Rook extends ChessPiece {
+    constructor(type : string, boardPosition : string, color : string) {
+        super(type, boardPosition, color);
+    }
+    canMoveTo() {
+      
+     }
+
+     canTake() {
+       
+     }
+}
+export class Knight extends ChessPiece {
+    constructor(type : string, boardPosition : string, color : string) {
+        super(type, boardPosition, color);
+    }
+    canMoveTo() {
+      
+     }
+
+     canTake() {
+       
+     }
+}
+export class Queen extends ChessPiece {
+    constructor(type : string, boardPosition : string, color : string) {
+        super(type, boardPosition, color);
+    }
+    canMoveTo() {
+      
+     }
+
+     canTake() {
+       
+     }
+}
+export class King extends ChessPiece {
+    constructor(type : string, boardPosition : string, color : string) {
+        super(type, boardPosition, color);
+    }
+    canMoveTo() {
+      
+     }
+
+     canTake() {
+       
+     }
+}
+
+export class ChessPieceFactory  {
+    pieces : {[key : string] : any} = {
+        'P' : Pawn
+    }
+    createPiece(type : string, boardPosition : string, color : string) {
+        let piece = new this.pieces[type](type, boardPosition, color)
         return piece
-        
     }
-    pawn() {
-       let possibleTakes = [];
-       let possibleMovments = [];
-       if(this.rank === '2') {
-            possibleMovments.push(`${this.file}${this.ranks[this.boardY + 2]}`);
-       }
-       possibleMovments.push(`${this.file}${this.ranks[this.boardY + 1]}`);
-       possibleMovments.push(`${this.files[this.boardX - 1]}${this.ranks[this.boardY + 1]}`);
-       possibleTakes.push(`${this.files[this.boardX + 1]}${this.ranks[this.boardY + 1]}`);
-       this.can.moveTo = this.filterMovePattern(possibleMovments);
-   
 
-       return  []
+    createPawn( boardPosition : string, color : string) {
+        return new Pawn('P', boardPosition, color)
     }
-}
 
+    createBishop( boardPosition : string, color : string) {
+        return new Bishop('B', boardPosition, color)
+    }
 
+    createRook( boardPosition : string, color : string) {
+        return new Rook('R', boardPosition, color)
+    }
 
+    createKnight( boardPosition : string, color : string) {
+        return new Knight('N', boardPosition, color)
+    }
 
+    createKing( boardPosition : string, color : string) {
+        return new King('K', boardPosition, color)
+    }
 
-
-export class Action implements DispatchAction {
-    type : string;
-    payload : any;
-
-    constructor(type : string, payload : any) {
-        this.type = type;
-        this.payload = payload;
+    createQueen( boardPosition : string, color : string) {
+        return new Queen('Q', boardPosition, color)
     }
 }
+
+
+
+
+
+
+
+
+
 
 export class ChessBoard implements Board {
     [key : string] : any;
@@ -204,5 +284,14 @@ export class BoardDispatch implements Board {
 
     setPieces(white : string[], black :string[]) {
         this.dispatcher(new Action(this.setPieces.name, [white, black]));
+    }
+}
+export class Action implements DispatchAction {
+    type : string;
+    payload : any;
+
+    constructor(type : string, payload : any) {
+        this.type = type;
+        this.payload = payload;
     }
 }
