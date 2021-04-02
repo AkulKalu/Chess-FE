@@ -1,9 +1,16 @@
+import { ChessPiece } from "./classes";
 
 
 export interface Piece {
     type : string;
     boardPosition : string
     color : string;
+    board : BoardTable;
+}
+export interface ClassicChessPiece extends Piece {
+    canMoveTo : () => void;
+    canTake : () => void;
+    moveSideways? : () => void;
 }
 
 export interface DispatchAction {
@@ -19,7 +26,7 @@ export interface Board {
 
 
 export interface BoardTable {
-    [field : string] : null | Piece
+    [field : string] : null | ClassicChessPiece
 }
 
 
