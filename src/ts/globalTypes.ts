@@ -1,4 +1,4 @@
-import { ChessPiece } from "./classes";
+
 
 
 export interface Piece {
@@ -7,10 +7,11 @@ export interface Piece {
     color : string;
     board : BoardTable;
 }
+export interface MovePattern {
+    scan(piece : Piece) : string[][]
+}
 export interface ClassicChessPiece extends Piece {
-    canMoveTo : () => void;
-    canTake : () => void;
-    moveSideways? : () => void;
+   
 }
 
 export interface DispatchAction {

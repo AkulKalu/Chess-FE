@@ -1,4 +1,4 @@
-import {Board, BoardTable, Piece, DispatchAction, ClassicChessPiece} from './globalTypes';
+import {Board, BoardTable, Piece, DispatchAction, ClassicChessPiece, MovePattern} from './globalTypes';
 import React from 'react';
 const typeNotations : { [key : string] : string } = {
     pawn : 'P',
@@ -16,7 +16,7 @@ class ChessPieceProperties {
     color : string = '';
     ranks : string[] = ['1', '2', '3' , '4' , '5' , '6' , '7', '8'];
     files : string[] = ['a','b','c','d','e','f','g','h'];
-
+    protected movePatterns : Array<MovePattern> = [];
     protected _board : BoardTable = {};
 
     constructor(type : string, boardPosition : string, color : string) {
@@ -35,10 +35,16 @@ class ChessPieceProperties {
         return this.files.indexOf(this.boardPosition[0]);
     }
     get axisXLeft() {
-        return this.files.slice(0, this.boardX).reverse();
+        return this.files.slice(0, this.boardX);
     }
     get axisXright(){
         return this.files.slice(this.boardX + 1);
+    } 
+    get axisYTop() {
+        return this.ranks.slice(this.boardY + 1);
+    }
+    get axisYBottom(){
+        return this.files.slice(0, this.boardY);
     } 
     get rank() {
         return this.boardPosition[1];
@@ -51,12 +57,21 @@ export class ChessPiece extends ChessPieceProperties implements Piece {
     constructor(type : string, boardPosition : string, color : string) {
         super(type, boardPosition, color)
     }
-
-    protected getMovementPattern(movementLines : string[][]) :  string[][] {
-        return movementLines.map(this.getEmptyFieldsInLine);
+    getInteractiveFields() {
+        let fieldsInRange =  this.movePatterns.reduce( (prev, movePattern) => [...prev, ...movePattern.scan(this)]  , [] );
+        let canMoveTo = this.getOpenFields(fieldsInRange);
+        let canTakeAt = this.getPossibleTakes(fieldsInRange);
+        return {
+            openFields : canMoveTo,
+            opponentFields : canTakeAt
+        }
     }
 
-    protected getEmptyFieldsInLine(line : string[]) {
+    protected getOpenFields(movementLines : string[][]) :  string[][] {
+        return movementLines.map(this.getOpenFieldsInLine);
+    }
+
+    protected getOpenFieldsInLine(line : string[]) {
         for (let i = 0; i < line.length; i++) {
             let field = line[i];
             let fieldPiece = this._board[field];
@@ -64,7 +79,7 @@ export class ChessPiece extends ChessPieceProperties implements Piece {
                 return line.slice(0, i); 
             } 
         }
-        return line.slice();
+        return line;
     }
 
     protected getPossibleTakes(movementLines : string[][]) : string[][] {
@@ -119,109 +134,149 @@ export class ChessPiece extends ChessPieceProperties implements Piece {
     }
 }
 
+
+class DiagonalPattern implements MovePattern {
+    protected range : number;
+
+    constructor(range : number = 8) {
+        this.range = range
+    }
+
+    scan(piece : ChessPiece) : string[][] {
+        let leftTopLine = [...piece.axisXLeft].reverse().map( this.getIncrementedFieldByRank(piece.rank, 1) );
+        let rightTopLine = piece.axisXright.map( this.getIncrementedFieldByRank(piece.rank, 1) );
+        let bottomRightLine = piece.axisXright.map( this.getIncrementedFieldByRank(piece.rank, -1) );
+        let bottomLeftLine = [...piece.axisXLeft].reverse().map( this.getIncrementedFieldByRank(piece.rank, -1) );
+        return [leftTopLine, rightTopLine, bottomRightLine, bottomLeftLine].map( line => {
+            return this.getInSetRange( this.filterOutOfBounds(line) )
+        })
+    }
+
+    protected filterOutOfBounds(positions : string[]) {
+        return positions.filter(position => {
+            let rank = Number( position.slice(1) );
+            return rank >= 1 && rank <= 8
+        })
+    }
+
+    protected getInSetRange(positions : string[]) {
+        return positions.slice(0 , this.range);
+    }
+
+    protected getIncrementedFieldByRank(currentRank : string | number, incrementDirection : number) {
+        return (file : string, i : number) => `${file}${Number(currentRank) + ((i + 1) *  incrementDirection)}`
+    }
+}
+class HorizontalPattern implements MovePattern {
+    protected range : number;
+
+    constructor(range : number = 8) {
+        this.range = range
+    }
+
+    scan(piece : ChessPiece) : string[][] {
+        let leftSide = piece.axisXLeft.map( file => `${file}${piece.rank}` );
+        let rightSide = piece.axisXright.map( file => `${file}${piece.rank}` );
+        return [this.getInSetRange( leftSide.reverse() ), this.getInSetRange(rightSide)];
+    }
+
+    protected getInSetRange(positions : string[]) {
+        return positions.slice(0 , this.range);
+    }
+} 
+class VerticalPattern implements MovePattern {
+    protected range : number;
+
+    constructor(range : number = 8) {
+        this.range = range
+    }
+
+    scan(piece : ChessPiece) : string[][] {
+        let topSide = piece.axisYTop.map( rank => `${piece.file}${rank}` );
+        let bottomSide = piece.axisYBottom.map( rank => `${piece.file}${rank}` );
+        return [this.getInSetRange(topSide), this.getInSetRange( bottomSide.reverse() )];
+    }
+
+    protected getInSetRange(positions : string[]) {
+        return positions.slice(0 , this.range);
+    }
+} 
+class HorsePattern implements MovePattern {
+    scan(piece : ChessPiece) : string[][] {
+        let leftPivot = piece.axisXLeft[piece.boardX - 3];
+        let rightPivot = piece.axisXLeft[piece.boardX + 3];
+        let topPivot = piece.axisYTop[piece.boardY + 3];
+        let bottomPivot = piece.axisYTop[piece.boardY - 3];
+        let jumpsY = [topPivot, bottomPivot].reduce( (jumps, pivotRank) => {
+            if(pivotRank) {
+                let pivoted = [];
+                let pivotLeftFile = piece.files[piece.boardX - 1];
+                let pivotRightFile = piece.files[piece.boardX + 1];
+                if(pivotLeftFile) pivoted.push( [`${pivotLeftFile}${pivotRank}`] );
+                if(pivotRightFile) pivoted.push( [`${pivotLeftFile}${pivotRank}`] );
+                return [...jumps, ...pivoted]
+            }
+            return  jumps;
+        }, [] )
+        let jumpsX = [leftPivot, rightPivot].reduce( (jumps, pivotFile) => {
+            if(pivotFile) {
+                let pivoted = [];
+                let pivotTopRank = piece.files[piece.boardY + 1];
+                let pivotBottomRank = piece.files[piece.boardX - 1];
+                if(pivotTopRank) pivoted.push( [`${pivotFile}${pivotTopRank}`] );
+                if(pivotBottomRank) pivoted.push( [`${pivotFile}${pivotBottomRank}`] );
+                return [...jumps, ...pivoted]
+            }
+            return  jumps;
+        }, [] )
+        return [...jumpsY, jumpsX];
+    }
+}
 export class Pawn extends ChessPiece implements ClassicChessPiece {
     constructor(type : string, boardPosition : string, color : string) {
         super(type, boardPosition, color);
+        this.movePatterns = [new VerticalPattern(2), new HorizontalPattern()]
     }
     canMoveTo() {
-        let possibleMovments = [`${this.file}${this.ranks[this.boardY + 1]}`];
-        if(this.rank === '2') {
-             possibleMovments.push(`${this.file}${this.ranks[this.boardY + 2]}`);
-        } 
-        return this.getMovementPattern([possibleMovments]);
-     }
+       
+    }
 
-     canTake() {
-        let possibleTakes = [`${this.files[this.boardX - 1]}${this.ranks[this.boardY + 1]}`,
-                             `${this.files[this.boardX + 1]}${this.ranks[this.boardY + 1]}`];
-        return this.getPossibleTakes([possibleTakes]);
-     }
+    //  canTake() {
+    //     let possibleTakes = [`${this.files[this.boardX - 1]}${this.ranks[this.boardY + 1]}`,
+    //                          `${this.files[this.boardX + 1]}${this.ranks[this.boardY + 1]}`];
+    //     return this.getPossibleTakes([possibleTakes]);
+    //  }
 }
-class SidewaysPattern {
-    scan(piece : ChessPiece) : string[][] {
-        const runByRank = function (currentRank : string | number, direction : number) {
-            return (file : string, i : number) => `${file}${Number(currentRank) + ((i + 1) *  direction)}`
-        }
-        
-        let leftTopLine = piece.axisXLeft.map( runByRank(piece.rank, 1) )
-        let rightTopLine = piece.axisXright.map( runByRank(piece.rank, 1) )
-        let bottomRightLine = piece.axisXright.map( runByRank(piece.rank, -1) )
-        let bottomLeftLine = piece.axisXLeft.map( runByRank(piece.rank, -1) )
-        
-        return [leftTopLine, rightTopLine, bottomRightLine, bottomLeftLine].map( line => {
-            return line.filter( position => {
-                let rank = Number(position.slice(1));
-                return rank >= 1 && rank <= 8
-            } )
-        })
-    }
-}
-class HorizontalPattern {
-    scan(piece : ChessPiece) : string[][] {
-        return []
-    }
-} 
 export class Bishop extends ChessPiece implements ClassicChessPiece {
-    movePatterns : any[];
+  
     constructor(type : string, boardPosition : string, color : string) {
         super(type, boardPosition, color);
-        this.movePatterns = [new SidewaysPattern()]
-    }
-    canMoveTo() {
-        return this.movePatterns.reduce( (prev, movePattern) => [...prev, ...movePattern.scan()]  , [] );
-    }
-   
-    canTake() {
-    
+        this.movePatterns = [new DiagonalPattern()]
     }
 }
 export class Rook extends ChessPiece implements ClassicChessPiece {
     constructor(type : string, boardPosition : string, color : string) {
         super(type, boardPosition, color);
+        this.movePatterns = [new HorizontalPattern(), new VerticalPattern()]
     }
-    canMoveTo() {
-        
-     }
-
-     canTake() {
-       
-     }
 }
 export class Knight extends ChessPiece implements ClassicChessPiece {
     constructor(type : string, boardPosition : string, color : string) {
         super(type, boardPosition, color);
+        this.movePatterns = [new HorsePattern()];
     }
-    canMoveTo() {
-      
-     }
-
-     canTake() {
-       
-     }
 }
 export class Queen extends ChessPiece implements ClassicChessPiece {
     constructor(type : string, boardPosition : string, color : string) {
         super(type, boardPosition, color);
+        this.movePatterns = [new VerticalPattern(), new HorizontalPattern(), new DiagonalPattern()]
     }
-    canMoveTo() {
-      
-     }
-
-     canTake() {
-       
-     }
 }
 export class King extends ChessPiece implements ClassicChessPiece {
     constructor(type : string, boardPosition : string, color : string) {
         super(type, boardPosition, color);
+        this.movePatterns = [new VerticalPattern(1), new HorizontalPattern(1), new DiagonalPattern(1)]
     }
-    canMoveTo() {
-      
-     }
-
-     canTake() {
-       
-     }
 }
 
 export class ChessPieceFactory  {
