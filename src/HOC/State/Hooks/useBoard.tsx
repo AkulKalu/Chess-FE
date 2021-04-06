@@ -1,6 +1,8 @@
-import React, { useEffect, useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 import { initialState, reducer } from '../../../reducers/board';
-import { BoardDispatch, ChessPiece } from '../../../ts/classes';
+import { ChessPiece } from '../../../ts/classes/chess/chessPiece';
+import { BoardDispatch } from '../../../ts/classes/controllers/boardController';
+
 
 
 

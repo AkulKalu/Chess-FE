@@ -20,7 +20,7 @@ export default function ChessPiece(props : ChessPieceProps) {
         K : King  ,
         P : Pawn ,
     } 
-    const Piece = pieces[props.piece.type]
+    const Piece = pieces[props.piece.properties.type]
     return <div className="max center">
         { <Piece /> }
     </div>

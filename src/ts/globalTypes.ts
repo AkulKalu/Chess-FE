@@ -1,17 +1,14 @@
-
-
+import { ChessPieceProperties } from "./dataStructures/chess";
 
 export interface Piece {
-    type : string;
-    boardPosition : string
-    color : string;
-    board : BoardTable;
+    readonly properties : ChessPieceProperties
 }
 export interface MovePattern {
     scan(piece : Piece) : string[][]
 }
-export interface ClassicChessPiece extends Piece {
-   
+
+export interface DataObject<Type> {
+    [key : string] : Type
 }
 
 export interface DispatchAction {
@@ -27,7 +24,7 @@ export interface Board {
 
 
 export interface BoardTable {
-    [field : string] : null | ClassicChessPiece
+    [field : string] : null | Piece
 }
 
 
