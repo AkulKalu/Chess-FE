@@ -1,3 +1,4 @@
+import { DataObject } from "../../globalTypes";
 import { ChessPiece } from "./chessPiece";
 
 export class ChessBoardScaner  {
@@ -8,32 +9,28 @@ export class ChessBoardScaner  {
     }
   
     getOpenFields(movementLines : string[][]) :  string[][] {
-        return movementLines.map(this.getOpenFieldsInLine);
-    }
-
-    protected getOpenFieldsInLine(line : string[]) {
-        for (let i = 0; i < line.length; i++) {
-            let field = line[i];
-            let fieldPiece = this.piece.board[field];
-            if(fieldPiece) {
-                return line.slice(0, i); 
-            } 
-        }
-        return line;
+        return movementLines.map(line => this.scanLine(line).openFields);
     }
 
     getPossibleTakes(movementLines : string[][]) : string[][] {
-        return movementLines.map(this.getOpponentFieldsInLine);
+        return movementLines.map(line => this.scanLine(line).opponentField);
     }
-
-    protected getOpponentFieldsInLine(line : string[]) : string[] {
+    protected scanLine( line : string[] ) : DataObject<string[]> {
+        let openFields : string[] = [];
+        let opponentField : string[] = [];  
         for (let i = 0; i < line.length; i++) {
             let field = line[i];
             let fieldPiece = this.piece.board[field];
             if(fieldPiece) {
-                return fieldPiece.properties.color === this.piece.properties.color ? [] : [field]
+                if(fieldPiece.properties.color === this.piece.properties.color) {
+                    opponentField = [field]
+                }
+                break;
             } 
         }
-        return [];
-     }
+        return {
+            openFields : openFields,
+            opponentField : opponentField
+        };
+    }
 }

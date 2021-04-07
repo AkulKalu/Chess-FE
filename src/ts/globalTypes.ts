@@ -4,7 +4,7 @@ export interface Piece {
     readonly properties : ChessPieceProperties
 }
 export interface MovePattern {
-    scan(piece : Piece) : string[][]
+    getFieldsInRange(piece : Piece) : string[][]
 }
 
 export interface DataObject<Type> {

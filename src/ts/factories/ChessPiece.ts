@@ -11,8 +11,7 @@ export class ChessPieceFactory  {
 
     createPiece(properties : ChessPieceProperties) : ChessPiece {
         let types = new ChessPieceNotation();
-        console.log(types.getFullName('N'));
-        
+       
         switch (properties.type) {
             case types.bishop:
                 return this.createBishop(properties);
