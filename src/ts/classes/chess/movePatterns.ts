@@ -14,9 +14,12 @@ class DiagonalPattern implements MovePattern {
         let rightTopLine = piece.axisX.right.map( this.getIncrementedFieldByRank(piece.rank, 1) );
         let bottomRightLine = piece.axisX.right.map( this.getIncrementedFieldByRank(piece.rank, -1) );
         let bottomLeftLine = [...piece.axisX.left].reverse().map( this.getIncrementedFieldByRank(piece.rank, -1) );
-        return [leftTopLine, rightTopLine, bottomRightLine, bottomLeftLine].map( line => {
+        let filterd = [leftTopLine, rightTopLine, bottomRightLine, bottomLeftLine].map( line => {
             return this.getInSetRange( this.filterOutOfBounds(line) )
         })
+        // console.log('side',filterd);
+        
+        return filterd
     }
 
     protected filterOutOfBounds(positions : string[]) {
@@ -44,7 +47,9 @@ class HorizontalPattern implements MovePattern {
     getFieldsInRange(piece : ChessPiece) : string[][] {
         let leftSide = piece.axisX.left.map( file => `${file}${piece.rank}` );
         let rightSide = piece.axisX.right.map( file => `${file}${piece.rank}` );
-        return [this.getInSetRange( leftSide.reverse() ), this.getInSetRange(rightSide)];
+        let filterd = [this.getInSetRange( leftSide.reverse() ), this.getInSetRange(rightSide)];
+        // console.log('horiz',filterd);
+        return filterd;
     }
 
     protected getInSetRange(positions : string[]) {
@@ -61,7 +66,9 @@ class VerticalPattern implements MovePattern {
     getFieldsInRange(piece : ChessPiece) : string[][] {
         let topSide = piece.axisY.top.map( rank => `${piece.file}${rank}` );
         let bottomSide = piece.axisY.bottom.map( rank => `${piece.file}${rank}` );
-        return [this.getInSetRange(topSide), this.getInSetRange( bottomSide.reverse() )];
+        let filterd = [this.getInSetRange(topSide), this.getInSetRange( bottomSide.reverse() )];
+        // console.log('vert',filterd);
+        return filterd
     }
 
     protected getInSetRange(positions : string[]) {
@@ -71,15 +78,16 @@ class VerticalPattern implements MovePattern {
 class HorsePattern implements MovePattern {
     getFieldsInRange(piece : ChessPiece) : string[][] {
         let boardNotation = new ChessBoardNotation();
-        let jumpCoordinates =  [[3, 1], [3, -1], [-3 , 1], [-3, -1]];
+        let jumpCoordinates =  [[2, 1], [2, -1], [-2 , 1], [-2, -1]];
         let jumpsX = jumpCoordinates.map( ([x, y]) =>{
             return [boardNotation.getAxisFieldNotation(piece.boardX + x, piece.boardY + y)];
         } )
         let jumpsY = jumpCoordinates.map(([y, x]) => {
             return [boardNotation.getAxisFieldNotation(piece.boardX + x, piece.boardY + y)];
         })
-
-        return  this.filterOutOfBounds([...jumpsX, ...jumpsY]);
+        let filterd = this.filterOutOfBounds([...jumpsX, ...jumpsY]);
+        // console.log('hors',filterd);
+        return  filterd
     }
     filterOutOfBounds(fields : string[][]) {
         return fields.filter( ([field]) =>  new ChessBoardNotation().getFieldNotations().includes(field))
@@ -101,9 +109,12 @@ export class PawnPattern extends BasePattern {
     }
     getFieldsInRange(piece : ChessPiece) {
         let [vertical, diagonal] = this.pattern;
-        let canMoveTo = vertical.getFieldsInRange(piece);
-        let canTake = diagonal.getFieldsInRange(piece)
+        //Pawns can move only forwards
+        let canMoveTo = vertical.getFieldsInRange(piece).slice(0, 1);
+        //Pawns can only take sideways moving forwards
+        let canTake = diagonal.getFieldsInRange(piece).slice(0,2); 
         if(piece.rank !== '2') canMoveTo.pop();
+        
         return [...canMoveTo, ...canTake]
     }
 }

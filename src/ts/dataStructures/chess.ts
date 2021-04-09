@@ -9,7 +9,7 @@ export class ChessBoardNotation {
     }
 
     getFieldNotations() : string[] {
-        let fieldColumns = this.files.map( file => this.ranks.map( rank => `${file}${rank}` ) );
+        let fieldColumns = [...this.ranks].reverse().map( rank => this.files.map( file => `${file}${rank}` ) );
         return fieldColumns.reduce<string[]>( (fields, column) => [...fields, ...column] , []);
     }
     getAxisFieldNotation(x : number, y : number) {

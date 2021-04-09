@@ -22,11 +22,12 @@ export class ChessBoardScaner  {
             let field = line[i];
             let fieldPiece = this.piece.board[field];
             if(fieldPiece) {
-                if(fieldPiece.properties.color === this.piece.properties.color) {
+                if(fieldPiece.properties.color !== this.piece.properties.color) {
                     opponentField = [field]
                 }
                 break;
             } 
+            openFields.push(field)
         }
         return {
             openFields : openFields,

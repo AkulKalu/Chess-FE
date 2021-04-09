@@ -1,3 +1,5 @@
+
+import { ChessPiece } from "./classes/chess/chessPiece";
 import { ChessPieceProperties } from "./dataStructures/chess";
 
 export interface Piece {
@@ -9,6 +11,10 @@ export interface MovePattern {
 
 export interface DataObject<Type> {
     [key : string] : Type
+}
+export interface ReducerObject<stateType, actionsType> {
+    state : stateType;
+    actions : actionsType | null
 }
 
 export interface DispatchAction {
@@ -24,7 +30,7 @@ export interface Board {
 
 
 export interface BoardTable {
-    [field : string] : null | Piece
+    [field : string] : null | ChessPiece
 }
 
 

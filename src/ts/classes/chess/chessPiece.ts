@@ -17,10 +17,11 @@ export class ChessPiece implements Piece {
         this.boardScanner = new ChessBoardScaner(this);
     }
 
-    getInteractiveFields() {
+    getInteractiveFields() : DataObject<string[][]> {
         let fieldsInRange = this.movePattern.getFieldsInRange(this);
         let canMoveTo = this.boardScanner.getOpenFields(fieldsInRange);
         let canTakeAt = this.boardScanner.getPossibleTakes(fieldsInRange);
+        
         return {
             openFields : canMoveTo,
             opponentFields : canTakeAt
@@ -76,6 +77,7 @@ export class Pawn extends ChessPiece {
         let [vertical, ...diagonal] = this.movePattern.getFieldsInRange(this);
         let canMoveTo = this.boardScanner.getOpenFields([vertical]);
         let canTakeAt = this.boardScanner.getPossibleTakes(diagonal);
+      
         return {
             openFields : canMoveTo,
             opponentFields : canTakeAt
