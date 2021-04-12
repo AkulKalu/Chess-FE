@@ -1,31 +1,23 @@
 import { ChessBoardNotation, ChessPieceProperties } from "../../dataStructures/chess";
-import { Piece, BoardTable, DataObject, MovePattern } from "../../globalTypes";
-import { ChessBoardScaner } from "./boardScaner";
+import { Piece, DataObject, MovePattern } from "../../globalTypes";
 import { BasePattern, BishopPattern, KingPattern, KnightPattern, PawnPattern, QueenPattern, RookPattern } from "./movePatterns";
 
 
 export class ChessPiece implements Piece {
     protected _properties : ChessPieceProperties;
-    protected boardScanner : ChessBoardScaner;
     protected movePattern : MovePattern;
-    protected _board : BoardTable;
 
-    constructor(properties : ChessPieceProperties, board : BoardTable) {
+    constructor(properties : ChessPieceProperties) {
         this._properties = properties
-        this._board = board;
         this.movePattern = new BasePattern();
-        this.boardScanner = new ChessBoardScaner(this);
     }
 
-    getInteractiveFields() : DataObject<string[][]> {
-        let fieldsInRange = this.movePattern.getFieldsInRange(this);
-        let canMoveTo = this.boardScanner.getOpenFields(fieldsInRange);
-        let canTakeAt = this.boardScanner.getPossibleTakes(fieldsInRange);
-        
-        return {
-            openFields : canMoveTo,
-            opponentFields : canTakeAt
-        }
+    getFieldsInRange() : string[][] {
+        return this.movePattern.getFieldsInRange(this);
+    }
+
+    moveTo(field : string) {
+        this.properties.position = field
     }
 
     get boardY() {
@@ -51,9 +43,7 @@ export class ChessPiece implements Piece {
             bottom : boardNotation.ranks.slice(0, this.boardY)
         }
     }
-    get board() {
-        return this._board
-    }
+   
     get properties() {
         return this._properties
     }
@@ -67,8 +57,8 @@ export class ChessPiece implements Piece {
 }
 
 export class Pawn extends ChessPiece {
-    constructor(properties : ChessPieceProperties, board : BoardTable) {
-        super(properties, board);
+    constructor(properties : ChessPieceProperties) {
+        super(properties);
         this.movePattern = new PawnPattern();
     }
 
@@ -77,7 +67,8 @@ export class Pawn extends ChessPiece {
         let [vertical, ...diagonal] = this.movePattern.getFieldsInRange(this);
         let canMoveTo = this.boardScanner.getOpenFields([vertical]);
         let canTakeAt = this.boardScanner.getPossibleTakes(diagonal);
-      
+        
+        
         return {
             openFields : canMoveTo,
             opponentFields : canTakeAt
@@ -85,32 +76,32 @@ export class Pawn extends ChessPiece {
     }
 } 
 export class Bishop extends ChessPiece {
-    constructor(properties : ChessPieceProperties, board : BoardTable) {
-        super(properties, board);
+    constructor(properties : ChessPieceProperties) {
+        super(properties);
         this.movePattern = new BishopPattern();
     }
 }
 export class Rook extends ChessPiece {
-    constructor(properties : ChessPieceProperties, board : BoardTable) {
-        super(properties, board);
+    constructor(properties : ChessPieceProperties) {
+        super(properties);
         this.movePattern = new RookPattern();
     }
 }
 export class Knight extends ChessPiece {
-    constructor(properties : ChessPieceProperties, board : BoardTable) {
-        super(properties, board);
+    constructor(properties : ChessPieceProperties, ) {
+        super(properties);
         this.movePattern = new KnightPattern();
     }
 }
 export class Queen extends ChessPiece {
-    constructor(properties : ChessPieceProperties, board : BoardTable) {
-        super(properties, board);
+    constructor(properties : ChessPieceProperties) {
+        super(properties);
         this.movePattern = new QueenPattern();
     }
 }
 export class King extends ChessPiece {
-    constructor(properties : ChessPieceProperties, board : BoardTable) {
-        super(properties, board);
+    constructor(properties : ChessPieceProperties) {
+        super(properties);
         this.movePattern = new KingPattern();
     }
 }

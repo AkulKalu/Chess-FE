@@ -12,6 +12,9 @@ export class ChessBoard implements Board {
     }
 
     movePiece(piece : ChessPiece, position : string)  {
+        this.state[piece.properties.position] = null;
+        piece.moveTo(position);
+        this.state[position] = piece;
     }
 
     pieceTakesPiece(piece1 : ChessPiece, piece2 : ChessPiece) {
@@ -48,8 +51,9 @@ export class ChessBoard implements Board {
 
     static getStartPositions() : { boardTop : string[], boardBottom : string[]} {
         return {
-            boardTop : ["Pa2", "Pb2", "Pc2", "Pd2", "Pe2", "Pf2", "Pg2", "Ph2", "Ra1", "Nb1", "Bc1", "Qd1", "Ke1", "Bf1", "Ng1", "Rh1"],
-            boardBottom : ["Ra8", "Nb8", "Bc8", "Qd8", "Ke8", "Bf8", "Ng8", "Rh8", "Pa7", "Pb7", "Pc7", "Pd7", "Pe7", "Pf7", "Pg7", "Ph7"]
+            
+            boardTop :  ["Ra8", "Nb8", "Bc8", "Qd8", "Ke8", "Bf8", "Ng8", "Rh8", "Pa7", "Pb7", "Pc7", "Pd7", "Pe7", "Pf7", "Pg7", "Ph7"],
+            boardBottom : ["Pa2", "Pb2", "Pc2", "Pd2", "Pe2", "Pf2", "Pg2", "Ph2", "Ra1", "Nb1", "Bc1", "Qd1", "Ke1", "Bf1", "Ng1", "Rh1"],
         }
     }
 }

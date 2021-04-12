@@ -8,7 +8,7 @@ export const initialState : BoardTable = ChessBoard.createBoardTable();
 
 export const reducer = (state : BoardTable, action : DispatchAction) => {
     const board = new ChessBoard(state);
-    board[action.type](...action.payload);
+    board[action.type](...action.payload);    
     return board.state;
   };
 

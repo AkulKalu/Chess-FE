@@ -8,10 +8,10 @@ interface ProviderProps {
 
 
 interface Context {
-    board : ReducerObject<BoardTable, Board>
+    board : ReducerObject<BoardTable, any>
 }
 
-const store = createContext<Context>({board: {state : {}, actions : null}});
+const store = createContext<Context>({board: {state : {}, actions : {}}});
 
 
 function Provider( { children } : ProviderProps ) {

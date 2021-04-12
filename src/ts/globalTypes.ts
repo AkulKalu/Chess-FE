@@ -14,7 +14,7 @@ export interface DataObject<Type> {
 }
 export interface ReducerObject<stateType, actionsType> {
     state : stateType;
-    actions : actionsType | null
+    actions : actionsType 
 }
 
 export interface DispatchAction {

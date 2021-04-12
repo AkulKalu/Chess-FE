@@ -1,16 +1,4 @@
-export function getFieldNotations() : string[] {
 
-    const fieldLetters = ['a','b','c','d','e','f','g','h'];
-    let notations : string[] = [];
-
-    fieldLetters.forEach((val, i) => {
-        fieldLetters.forEach((letter) => {
-            notations.push(`${letter}${fieldLetters.length - i}`)
-        })
-    })
-    
-    return notations
-}
 export function getStartPositions( positions : string[] ) : string[] {
 
     const start : string[] = positions.map( (pos, i) => {
@@ -53,7 +41,10 @@ export function createEmptyBoard( notations : string[] ) : Board {
     return board;
 }
 
-
+export function composeClasses(...clsArgs : any[]) : string {
+    let classes =  clsArgs.filter(cls => typeof cls === 'string')
+    return classes.join(' ');
+}
 
 
 export function checkFieldColor() : ( fieldIndex : number ) => boolean  {

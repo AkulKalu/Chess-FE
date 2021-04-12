@@ -5,13 +5,12 @@ import Pawn from './Classic/Pawn';
 import Knight from './Classic/Knight';
 import King from './Classic/King';
 import Queen from './Classic/Queen';
-import { Board, DataObject } from '../../ts/globalTypes';
+import { Board } from '../../ts/globalTypes';
 import { ChessPiece } from '../../ts/classes/chess/chessPiece';
 
 interface ChessPieceProps {
     piece : ChessPiece,
-    onBoard : Board | null,
-    callHighlight : React.Dispatch<DataObject<string[][]>>
+    select : React.Dispatch<ChessPiece | null>
 }
 
 const pieces : {[key : string] : any} = {
@@ -23,13 +22,13 @@ const pieces : {[key : string] : any} = {
     P : Pawn ,
 } 
 
-export default function ChessPieceEl(props : ChessPieceProps) {
-    const {piece, onBoard, callHighlight} = props;
-    const highlightInteractiveFields = () => {
-        callHighlight(piece.getInteractiveFields());
+export default function ChessPieceCMP(props : ChessPieceProps) {
+    const {piece, select} = props;
+    const selectPiece = () => {
+        select(piece);
     }
     const PieceSVG = pieces[props.piece.properties.type];
-    return <div onClick={highlightInteractiveFields} className="max center">
+    return <div onClick={selectPiece} className="max center">
         { <PieceSVG /> }
     </div>
 }
