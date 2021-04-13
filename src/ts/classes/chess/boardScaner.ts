@@ -1,40 +1,64 @@
-import { BoardTable, DataObject } from "../../globalTypes";
+import { BoardTable } from "../../globalTypes";
 import { ChessPiece } from "./chessPiece";
 
 export class ChessBoardScaner  {
     private piece : ChessPiece;
     private board : BoardTable;
-    private selected ;
+    private selected : {
+        canMoveTo : string[][],
+        canTake : string[][]
+    } ;
 
     constructor( board : BoardTable) {
         this.board = board;
-    }
-
-    getPlaysForPiece(piece : ChessPiece)  {
-        this.piece = piece;
         this.selected = {
             canMoveTo : [],
             canTake : [],
         }
-        piece.getFieldsInRange().forEach( line => this.scanLine(line))
+    }
+
+    getPlaysForPiece(piece : ChessPiece)  {
+        if(piece) {
+            this.piece = piece;
+            this.selected.canMoveTo = [];
+            this.selected.canTake = [];
+            piece.getFieldsInRange().forEach( line => {
+                this.scanForOpenFields(line)
+                this.scanForOpponentPiece(line)
+                })
+            }
         return this.selected;
     }
-  
-    protected scanLine( line : string[] ) {
-        let openFields : string[] = [];
-        let opponentField : string[] = [];  
-        for (let i = 0; i < line.length; i++) {
-            let field = line[i];
-            let fieldPiece = this.board[field];
-            if(fieldPiece) {
-                if(fieldPiece.properties.color !== this.piece.properties.color) {
-                    opponentField = [field]
-                }
-                break;
-            } 
-            openFields.push(field)
+
+
+    assertFieldIsInteractive(field : string) : boolean[] {
+        let canMoveTo = this.selected.canMoveTo.filter( line => line.includes(field) );
+        let canTake = this.selected.canTake.filter( line => line.includes(field) );
+        return [Boolean(canMoveTo.length), Boolean(canTake.length)];
+    }
+
+    protected scanForOpenFields(line : string[]) {
+        let block = 0
+        let pieceBlocking = line.some( (field, idx) => {
+            block = idx
+            return this.board[field];
+        })
+        let res = pieceBlocking ? line.slice(0, block) : line;
+        this.selected.canMoveTo.push(res)
+    }
+
+    protected scanForOpponentPiece(line : string[]) {
+        let block = 0
+        let pieceBlocking = line.some( (field, idx) => {
+            block = idx
+            return this.board[field];
+        })
+        if(pieceBlocking) {
+            let piece =  this.board[line[block]]!
+            if(piece.properties.color !== this.piece.properties.color) {
+                this.selected.canTake.push([line[block]]);
+            }
         }
-        this.selected.canMoveTo.push(openFields);
-        this.selected.canTake.push(opponentField);
+        this.selected.canTake.push([]);
     }
 }

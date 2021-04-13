@@ -61,19 +61,6 @@ export class Pawn extends ChessPiece {
         super(properties);
         this.movePattern = new PawnPattern();
     }
-
-    getInteractiveFields() {
-        // special case - pawns can't move diagonal unless takng opponent piece
-        let [vertical, ...diagonal] = this.movePattern.getFieldsInRange(this);
-        let canMoveTo = this.boardScanner.getOpenFields([vertical]);
-        let canTakeAt = this.boardScanner.getPossibleTakes(diagonal);
-        
-        
-        return {
-            openFields : canMoveTo,
-            opponentFields : canTakeAt
-        }
-    }
 } 
 export class Bishop extends ChessPiece {
     constructor(properties : ChessPieceProperties) {

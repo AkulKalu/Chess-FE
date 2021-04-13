@@ -5,7 +5,6 @@ import Pawn from './Classic/Pawn';
 import Knight from './Classic/Knight';
 import King from './Classic/King';
 import Queen from './Classic/Queen';
-import { Board } from '../../ts/globalTypes';
 import { ChessPiece } from '../../ts/classes/chess/chessPiece';
 
 interface ChessPieceProps {
@@ -25,7 +24,7 @@ const pieces : {[key : string] : any} = {
 export default function ChessPieceCMP(props : ChessPieceProps) {
     const {piece, select} = props;
     const selectPiece = () => {
-        select(piece);
+        piece.properties.color === 'white' && select(piece);
     }
     const PieceSVG = pieces[props.piece.properties.type];
     return <div onClick={selectPiece} className="max center">

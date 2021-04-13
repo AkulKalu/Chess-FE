@@ -28,6 +28,9 @@ export class ChessPieceProperties {
         this.color = color;
         this.type = type;
     }
+    static fromNotation(notation : string, color : string = 'white') {
+        return new ChessPieceProperties(notation[0], notation.slice(1), color)
+    }
 }
 export class ChessPieceNotation {
     pawn = 'P';

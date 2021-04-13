@@ -18,23 +18,25 @@ export class ChessBoard implements Board {
     }
 
     pieceTakesPiece(piece1 : ChessPiece, piece2 : ChessPiece) {
+        this.state[piece1.properties.position] = null;
+        piece1.moveTo(piece2.properties.position);
+        this.state[piece1.properties.position] = null;
+        this.state[piece1.properties.position] = piece1;
     }
 
     setPieces(white : string[], black :string[])  {
         white.forEach(piece => {
-            this.setPiece(piece);
+            this.setPiece(ChessPieceProperties.fromNotation(piece));
         })
         black.forEach(piece => {
-            this.setPiece(piece);
+            this.setPiece(ChessPieceProperties.fromNotation(piece, 'black'));
         })
     }
 
-    setPiece(standardNotation : string) {
-        const chessPieceFactory = new ChessPieceFactory(this.state);
-        let type = standardNotation[0];
-        let position = standardNotation.slice(1);
-        let chessPiece =  chessPieceFactory.createPiece(new ChessPieceProperties(type, position, 'white'));
-        this.state[position] = chessPiece;  
+    setPiece(properties : ChessPieceProperties) {
+        const chessPieceFactory = new ChessPieceFactory();
+        let chessPiece =  chessPieceFactory.createPiece(properties);
+        this.state[properties.position] = chessPiece;  
     }
 
     get state() {
@@ -51,7 +53,6 @@ export class ChessBoard implements Board {
 
     static getStartPositions() : { boardTop : string[], boardBottom : string[]} {
         return {
-            
             boardTop :  ["Ra8", "Nb8", "Bc8", "Qd8", "Ke8", "Bf8", "Ng8", "Rh8", "Pa7", "Pb7", "Pc7", "Pd7", "Pe7", "Pf7", "Pg7", "Ph7"],
             boardBottom : ["Pa2", "Pb2", "Pc2", "Pd2", "Pe2", "Pf2", "Pg2", "Ph2", "Ra1", "Nb1", "Bc1", "Qd1", "Ke1", "Bf1", "Ng1", "Rh1"],
         }

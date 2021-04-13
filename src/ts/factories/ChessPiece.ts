@@ -1,14 +1,7 @@
 import { ChessPiece, Pawn, Bishop, Rook, Knight, King, Queen } from "../classes/chess/chessPiece";
 import { ChessPieceProperties, ChessPieceNotation } from "../dataStructures/chess";
-import { BoardTable } from "../globalTypes";
 
 export class ChessPieceFactory  {
-    board : BoardTable;
-
-    constructor(board : BoardTable) {
-        this.board = board
-    }
-
     createPiece(properties : ChessPieceProperties) : ChessPiece {
         let types = new ChessPieceNotation();
        
@@ -29,26 +22,26 @@ export class ChessPieceFactory  {
     }
 
     createPawn(properties : ChessPieceProperties) {
-        return new Pawn(properties, this.board)
+        return new Pawn(properties)
     }
 
     createBishop(properties : ChessPieceProperties) {
-        return new Bishop(properties, this.board)
+        return new Bishop(properties)
     }
 
     createRook(properties : ChessPieceProperties) {
-        return new Rook(properties, this.board)
+        return new Rook(properties)
     }
 
     createKnight(properties : ChessPieceProperties) {
-        return new Knight(properties, this.board)
+        return new Knight(properties)
     }
 
     createKing(properties : ChessPieceProperties) {
-        return new King(properties, this.board)
+        return new King(properties)
     }
 
     createQueen(properties : ChessPieceProperties) {
-        return new Queen(properties, this.board)
+        return new Queen(properties)
     }
 }
