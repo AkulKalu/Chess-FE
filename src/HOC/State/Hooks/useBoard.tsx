@@ -14,8 +14,6 @@ export default function useBoard() : ReducerObject<BoardTable, Board> {
     useEffect(() => {
         let start = ChessBoard.getStartPositions();
         start.boardBottom = ["Pa2", "Pb2", "Pc2", "Pd2", "Pe2", "Pf2", "Pg2", "Ph2", "Ra1", "Nb1", "Bc1", "Qd1", "Ke6", "Bf1", "Ng1", "Rh1"]
-       
-        
         boardController.setPieces(start.boardBottom, start.boardTop)
     }, [])
    

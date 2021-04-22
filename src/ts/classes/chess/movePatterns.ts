@@ -111,6 +111,7 @@ export class PawnPattern extends BasePattern {
         return [...canMoveTo, ...canTake];
     }
 }
+
 export class BishopPattern extends BasePattern {
     constructor() {
         super();

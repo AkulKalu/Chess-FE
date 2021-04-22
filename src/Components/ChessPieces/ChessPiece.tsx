@@ -1,4 +1,3 @@
-import React from 'react';
 import Bishop from './Classic/Bishop';
 import Rook from './Classic/Rook';
 import Pawn from './Classic/Pawn';

@@ -20,7 +20,6 @@ export class ChessBoard implements Board {
     pieceTakesPiece(piece1 : ChessPiece, piece2 : ChessPiece) {
         this.state[piece1.properties.position] = null;
         piece1.moveTo(piece2.properties.position);
-        this.state[piece1.properties.position] = null;
         this.state[piece1.properties.position] = piece1;
     }
 

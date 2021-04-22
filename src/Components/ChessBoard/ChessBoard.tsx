@@ -1,13 +1,22 @@
 import React, { useContext, useState,  } from 'react';
 import ChessField  from '../ChessField/ChessField'
+import ChessPieceJSX from '../ChessPieces/ChessPiece';
 import {checkFieldColor } from '../../helpers/functions';
 import { store } from '../../HOC/State/Provider'
-import ChessPieceJSX from '../ChessPieces/ChessPiece';
 import { ChessBoardNotation } from '../../ts/dataStructures/chess';
 import { ChessPiece } from '../../ts/classes/chess/chessPiece';
 import { ChessBoardScaner } from '../../ts/classes/chess/boardScaner';
+import { Game, move, status, moves, aiMove, getFen } from 'js-chess-engine';
 
 const boardNotation = new ChessBoardNotation();
+
+const game = new Game();
+console.log(game.move('A2', 'A3'));
+
+console.log(game.aiMove(2))
+console.log(game);
+
+
 
 export default function ChessBoard() {
     const [selectedPiece, setSelectedPiece] = useState<ChessPiece | null>(null);
@@ -18,7 +27,8 @@ export default function ChessBoard() {
     
     const fields = boardNotation.getFieldNotations().map( (field, i) => {
             let piece = board.state[field];
-            return <ChessField 
+            return (
+                <ChessField 
                     black = {setBlackField(i)}
                     interactive = {playMaker.assertFieldIsInteractive(field)}   
                     interact = {board}
@@ -26,13 +36,16 @@ export default function ChessBoard() {
                     key={field} 
                     notation={field}>
                         {piece &&  <ChessPieceJSX select={setSelectedPiece} piece={piece} />}
-                    </ChessField>
+                </ChessField>
+            ) 
         }
     )
 
-    return <div className="max">
-       <div className="max board">
-            {fields}
-       </div>
-    </div>  
+    return (
+        <div className="max">
+            <div className="max board">
+                {fields}
+            </div>
+        </div> 
+    )  
 }
