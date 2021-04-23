@@ -10,10 +10,10 @@ class DiagonalPattern implements MovePattern {
     }
 
     getFieldsInRange(piece : ChessPiece) : string[][] {
-        let leftTopLine = [...piece.axisX.left].reverse().map( this.getIncrementedFieldByRank(piece.rank, 1) );
-        let rightTopLine = piece.axisX.right.map( this.getIncrementedFieldByRank(piece.rank, 1) );
-        let bottomRightLine = piece.axisX.right.map( this.getIncrementedFieldByRank(piece.rank, -1) );
-        let bottomLeftLine = [...piece.axisX.left].reverse().map( this.getIncrementedFieldByRank(piece.rank, -1) );
+        let leftTopLine = [...piece.axisX.left].reverse().map( this.getIncrementedFieldByRank(piece.properties.rank, 1) );
+        let rightTopLine = piece.axisX.right.map( this.getIncrementedFieldByRank(piece.properties.rank, 1) );
+        let bottomRightLine = piece.axisX.right.map( this.getIncrementedFieldByRank(piece.properties.rank, -1) );
+        let bottomLeftLine = [...piece.axisX.left].reverse().map( this.getIncrementedFieldByRank(piece.properties.rank, -1) );
         let filterd = [leftTopLine, rightTopLine, bottomRightLine, bottomLeftLine].map( line => {
             return this.getInSetRange( this.filterOutOfBounds(line) )
         })
@@ -43,8 +43,8 @@ class HorizontalPattern implements MovePattern {
     }
 
     getFieldsInRange(piece : ChessPiece) : string[][] {
-        let leftSide = piece.axisX.left.map( file => `${file}${piece.rank}` );
-        let rightSide = piece.axisX.right.map( file => `${file}${piece.rank}` );
+        let leftSide = piece.axisX.left.map( file => `${file}${piece.properties.rank}` );
+        let rightSide = piece.axisX.right.map( file => `${file}${piece.properties.rank}` );
         return [this.getInSetRange( leftSide.reverse() ), this.getInSetRange(rightSide)]; 
     }
 
@@ -60,8 +60,8 @@ class VerticalPattern implements MovePattern {
     }
 
     getFieldsInRange(piece : ChessPiece) : string[][] {
-        let topSide = piece.axisY.top.map( rank => `${piece.file}${rank}` );
-        let bottomSide = piece.axisY.bottom.map( rank => `${piece.file}${rank}` );
+        let topSide = piece.axisY.top.map( rank => `${piece.properties.file}${rank}` );
+        let bottomSide = piece.axisY.bottom.map( rank => `${piece.properties.file}${rank}` );
         return [this.getInSetRange(topSide), this.getInSetRange( bottomSide.reverse() )];
     }
 
@@ -107,7 +107,7 @@ export class PawnPattern extends BasePattern {
         let canMoveTo = vertical.getFieldsInRange(piece).slice(0, 1);
         //Pawns can only take sideways moving forwards
         let canTake = diagonal.getFieldsInRange(piece).slice(0,2); 
-        if(piece.rank !== '2') canMoveTo[0].pop();
+        if(piece.properties.rank !== '2') canMoveTo[0].pop();
         return [...canMoveTo, ...canTake];
     }
 }

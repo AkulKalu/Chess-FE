@@ -47,13 +47,7 @@ export class ChessPiece implements Piece {
     get properties() {
         return this._properties
     }
-    get rank() {
-        return this.properties.position[1];
-    }
-
-    get file() {
-        return this.properties.position[0];
-    }
+   
 }
 
 export class Pawn extends ChessPiece {

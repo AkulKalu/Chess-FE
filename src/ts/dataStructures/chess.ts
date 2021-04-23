@@ -1,3 +1,5 @@
+import { BoardTable } from "../globalTypes";
+
 export class ChessBoardNotation {
     ranks : string[];
     files : string[];
@@ -28,6 +30,12 @@ export class ChessPieceProperties {
         this.color = color;
         this.type = type;
     }
+    get rank() {
+        return this.position[1];
+    }
+    get file() {
+        return this.position[0];
+    }
     static fromNotation(notation : string, color : string = 'white') {
         return new ChessPieceProperties(notation[0], notation.slice(1), color)
     }
@@ -49,5 +57,24 @@ export class ChessPieceNotation {
         )[0]
         return entrie && entrie[0];
     }
+}
+
+export class ChessGame {
+    player : string;
+    turn: string;
+    lastMove : string = '';
+    totalMoves = 0;
+    pastMoves : string[] = [];
+    board : BoardTable;
+
+    constructor(playerColor : string, board : BoardTable, turn : string = 'white') {
+        this.player = playerColor
+        this.turn = turn;
+        this.board = board
+    }
+    get isPlayersTurn() {
+        return this.player === this.turn;
+    }
+
 }
 
