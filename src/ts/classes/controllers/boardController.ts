@@ -17,7 +17,7 @@ export class BoardController implements Board {
         this.actionDispatcher(new Action(this.pieceTakesPiece.name, [piece1, piece2]));
     }
 
-    setPieces(white : string[], black :string[]) {
-        this.actionDispatcher(new Action(this.setPieces.name, [white, black]));
+    setPieces(white : string[], black :string[], player : string = 'white') {
+        this.actionDispatcher(new Action(this.setPieces.name, [white, black, player]));
     }
 }

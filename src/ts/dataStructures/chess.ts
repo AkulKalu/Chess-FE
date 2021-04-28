@@ -36,6 +36,9 @@ export class ChessPieceProperties {
     get file() {
         return this.position[0];
     }
+    getCopy() {
+        return new ChessPieceProperties(this.type, this.position, this.color)
+    }
     static fromNotation(notation : string, color : string = 'white') {
         return new ChessPieceProperties(notation[0], notation.slice(1), color)
     }

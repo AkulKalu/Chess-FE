@@ -22,11 +22,16 @@ const pieces : {[key : string] : any} = {
 
 export default function ChessPieceCMP(props : ChessPieceProps) {
     const {piece, select} = props;
-    const selectPiece = () => {
-        piece.properties.color === 'white' && select(piece);
+    const selectPiece = (e : any) => {
+        e.stopPropagation();
+        select(piece);
+    }
+    const enemy = () => {
+        console.log(piece.isPlayer)
+        return
     }
     const PieceSVG = pieces[props.piece.properties.type];
-    return <div onClick={selectPiece} className="max center">
+    return <div  onClick={piece.isPlayer ? selectPiece : enemy} className="max center">
         { <PieceSVG /> }
     </div>
 }

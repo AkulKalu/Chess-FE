@@ -5,44 +5,60 @@ import { ChessPiece } from "./chessPiece";
 
 export class ChessBoard implements Board {
     [key : string] : any;
-    private _state : BoardTable;
+    private readonly _state : BoardTable;
 
     constructor(boardState : BoardTable) {
-        this._state = {...boardState};
+        this._state = ChessBoard.copyBoardTable(boardState);
+
     }
 
-    movePiece(piece : ChessPiece, position : string)  {
-        this.state[piece.properties.position] = null;
-        piece.moveTo(position);
-        this.state[position] = piece;
-        
+    static copyBoardTable(table : BoardTable) : BoardTable {
+        let empty = ChessBoard.createBoardTable();
+        let pieceFactory = new ChessPieceFactory();
+        Object.entries(table).forEach(([pos, piece]) => {
+            if(piece instanceof  ChessPiece) {
+                empty[pos] = pieceFactory.createPiece(piece.properties.getCopy(), piece.isPlayer)
+            }
+        })
+        return empty;
+    }
+
+    movePiece(piece : ChessPiece, movePosition : string)  {
+       this.pickUpAndPut(piece.properties.position, movePosition)
     }
 
     pieceTakesPiece(piece1 : ChessPiece, piece2 : ChessPiece) {
-        this.state[piece1.properties.position] = null;
-        piece1.moveTo(piece2.properties.position);
-        this.state[piece1.properties.position] = piece1;
+        this.pickUpAndPut(piece1.properties.position, piece2.properties.position)
     }
 
-    setPieces(white : string[], black :string[])  {
+    protected  pickUpAndPut(fromField : string, toField : string) {
+        let piece = this._state[fromField];
+        if(piece instanceof ChessPiece) {
+            piece.moveTo(toField);
+            this._state[fromField] = null;
+            this._state[toField] = piece
+        }
+    }
+
+    setPieces(white : string[], black :string[], player : string)  {
         white.forEach(piece => {
-            this.setPiece(ChessPieceProperties.fromNotation(piece));
+            this.setPiece(ChessPieceProperties.fromNotation(piece), player === 'white' );
         })
         black.forEach(piece => {
-            this.setPiece(ChessPieceProperties.fromNotation(piece, 'black'));
+            this.setPiece(ChessPieceProperties.fromNotation(piece, 'black'), player === 'black');
         })
     }
 
-    setPiece(properties : ChessPieceProperties) {
+    setPiece(properties : ChessPieceProperties, isPlayer : boolean = false ) {
         const chessPieceFactory = new ChessPieceFactory();
-        let chessPiece =  chessPieceFactory.createPiece(properties);
-        this.state[properties.position] = chessPiece;  
+        let chessPiece =  chessPieceFactory.createPiece(properties, isPlayer);
+        this._state[properties.position] = chessPiece;
     }
 
     get state() {
         return this._state
     }
-    
+
     static createBoardTable() : BoardTable {
         let notations = new ChessBoardNotation();
         return notations.getFieldNotations().reduce<BoardTable>( (board, field) => {

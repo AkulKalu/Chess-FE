@@ -9,15 +9,14 @@ class DiagonalPattern implements MovePattern {
         this.range = range
     }
 
-    getFieldsInRange(piece : ChessPiece) : string[][] {
-        let leftTopLine = [...piece.axisX.left].reverse().map( this.getIncrementedFieldByRank(piece.properties.rank, 1) );
-        let rightTopLine = piece.axisX.right.map( this.getIncrementedFieldByRank(piece.properties.rank, 1) );
-        let bottomRightLine = piece.axisX.right.map( this.getIncrementedFieldByRank(piece.properties.rank, -1) );
-        let bottomLeftLine = [...piece.axisX.left].reverse().map( this.getIncrementedFieldByRank(piece.properties.rank, -1) );
-        let filterd = [leftTopLine, rightTopLine, bottomRightLine, bottomLeftLine].map( line => {
-            return this.getInSetRange( this.filterOutOfBounds(line) )
-        })
-        return filterd
+    getFieldsInRange(piece: ChessPiece): string[][] {
+        let leftTopLine = [...piece.axisX.left].reverse().map(this.getIncrementedFieldByRank(piece.properties.rank, 1));
+        let rightTopLine = piece.axisX.right.map(this.getIncrementedFieldByRank(piece.properties.rank, 1));
+        let bottomRightLine = piece.axisX.right.map(this.getIncrementedFieldByRank(piece.properties.rank, -1));
+        let bottomLeftLine = [...piece.axisX.left].reverse().map(this.getIncrementedFieldByRank(piece.properties.rank, -1));
+        return [leftTopLine, rightTopLine, bottomRightLine, bottomLeftLine].map(line => {
+            return this.getInSetRange(this.filterOutOfBounds(line))
+        });
     }
 
     protected filterOutOfBounds(positions : string[]) {

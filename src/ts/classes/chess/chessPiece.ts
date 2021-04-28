@@ -1,15 +1,16 @@
 import { ChessBoardNotation, ChessPieceProperties } from "../../dataStructures/chess";
 import { Piece, DataObject, MovePattern } from "../../globalTypes";
-import { BasePattern, BishopPattern, KingPattern, KnightPattern, PawnPattern, QueenPattern, RookPattern } from "./movePatterns";
-
+import { BasePattern } from "./movePatterns";
 
 export class ChessPiece implements Piece {
     protected _properties : ChessPieceProperties;
     protected movePattern : MovePattern;
+    protected player : boolean;
 
-    constructor(properties : ChessPieceProperties) {
+    constructor(properties : ChessPieceProperties, player : boolean = false) {
         this._properties = properties
         this.movePattern = new BasePattern();
+        this.player = player
     }
 
     getFieldsInRange() : string[][] {
@@ -18,6 +19,10 @@ export class ChessPiece implements Piece {
 
     moveTo(field : string) {
         this.properties.position = field
+    }
+
+    get isPlayer() {
+        return this.player
     }
 
     get boardY() {
@@ -47,42 +52,5 @@ export class ChessPiece implements Piece {
     get properties() {
         return this._properties
     }
-   
 }
 
-export class Pawn extends ChessPiece {
-    constructor(properties : ChessPieceProperties) {
-        super(properties);
-        this.movePattern = new PawnPattern();
-    }
-} 
-export class Bishop extends ChessPiece {
-    constructor(properties : ChessPieceProperties) {
-        super(properties);
-        this.movePattern = new BishopPattern();
-    }
-}
-export class Rook extends ChessPiece {
-    constructor(properties : ChessPieceProperties) {
-        super(properties);
-        this.movePattern = new RookPattern();
-    }
-}
-export class Knight extends ChessPiece {
-    constructor(properties : ChessPieceProperties, ) {
-        super(properties);
-        this.movePattern = new KnightPattern();
-    }
-}
-export class Queen extends ChessPiece {
-    constructor(properties : ChessPieceProperties) {
-        super(properties);
-        this.movePattern = new QueenPattern();
-    }
-}
-export class King extends ChessPiece {
-    constructor(properties : ChessPieceProperties) {
-        super(properties);
-        this.movePattern = new KingPattern();
-    }
-}

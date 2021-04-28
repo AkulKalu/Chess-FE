@@ -25,7 +25,7 @@ export interface DispatchAction {
 export interface Board {
     movePiece(piece : Piece, position : string) : any;
     pieceTakesPiece(piece1 : Piece, piece2 : Piece) : any;
-    setPieces(white : string[], black :string[]) : any;
+    setPieces(white : string[], black :string[], player : string) : any;
 }
 
 

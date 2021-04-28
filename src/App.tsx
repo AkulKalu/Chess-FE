@@ -5,9 +5,11 @@ import {Provider} from './HOC/State/Provider'
 
 function App() {
  
-  return <Provider> 
-            <Layout /> 
-          </Provider>;
+  return (
+          <Provider>
+              <Layout />
+          </Provider>
+      )
 }
 
 export default App;

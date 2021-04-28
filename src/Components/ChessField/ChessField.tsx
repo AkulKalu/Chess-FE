@@ -5,36 +5,26 @@ import {composeClasses} from '../../helpers/functions'
 import './ChessField.scss'
 
 interface ChessFieldProps {
-    notation : string,
     black : boolean,
     children : ReactNode | null,
-    interactive : boolean[],
-    interact : ReducerObject<BoardTable, Board >
-    selectedPiece : ChessPiece | null
+    interact : () => void
+    interactive : boolean[]
 }
 
 
 export default function ChessField(props : ChessFieldProps) {
-    let {notation, black, children, selectedPiece, interact : onBoard } = props;
-    let [canMoveHere, canTakePiece] = props.interactive;
- 
-    const makeMove = () => {
-        if(canMoveHere) {
-            onBoard.actions.movePiece(selectedPiece!, notation);
-        }else if(canTakePiece) {
-            onBoard.actions.pieceTakesPiece(selectedPiece!, onBoard.state[notation]!);
-        }
-    }
+    let { black, children, interact } = props;
+    let [canMoveHere, canTakePiece] = props.interactive
 
     return (
         <div 
-        className={composeClasses(
-            'field', 
-            black && 'black', 
-            canMoveHere && 'hl-gold',
-            canTakePiece && 'hl-red')}
-        onClick = {selectedPiece! && makeMove}
-        >
+            className={composeClasses(
+                'field',
+                black && 'black',
+                canMoveHere && 'hl-gold',
+                canTakePiece && 'hl-red')}
+            onClick = {interact}
+            >
             {children}
         </div>  
     ) 

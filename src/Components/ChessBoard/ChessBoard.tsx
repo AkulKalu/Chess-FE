@@ -6,35 +6,50 @@ import { store } from '../../HOC/State/Provider'
 import { ChessBoardNotation } from '../../ts/dataStructures/chess';
 import { ChessPiece } from '../../ts/classes/chess/chessPiece';
 import { ChessBoardScaner } from '../../ts/classes/chess/boardScaner';
-import { Game, move, status, moves, aiMove, getFen } from 'js-chess-engine';
+
 
 const boardNotation = new ChessBoardNotation();
-
-const game = new Game();
-console.log(game.move('A2', 'A3'));
-
-console.log(game.aiMove(2))
-console.log(game);
 
 
 
 export default function ChessBoard() {
     const [selectedPiece, setSelectedPiece] = useState<ChessPiece | null>(null);
+    let player = 'white'
     const {board} = useContext(store);
     const setBlackField = checkFieldColor();
     const playMaker = new ChessBoardScaner(board.state);
     playMaker.getPlaysForPiece(selectedPiece!);
+
+    const setFieldInteractivity = ( field : string, interactivity : boolean[] ) => {
+        let [move, take] =  interactivity;
+        if(move) {
+            return () => {
+                board.actions.movePiece(selectedPiece!, field);
+                setSelectedPiece(null);
+            }
+        }else if(take) {
+            return () => {
+                board.actions.pieceTakesPiece(selectedPiece!, board.state[field]);
+                setSelectedPiece(null);
+            }
+        }
+        return () => {
+            if(selectedPiece) {
+                setSelectedPiece(null);
+            }
+        }
+    }
+
     
     const fields = boardNotation.getFieldNotations().map( (field, i) => {
             let piece = board.state[field];
+            let interactivity = playMaker.assertFieldIsInteractive(field)
             return (
                 <ChessField 
                     black = {setBlackField(i)}
-                    interactive = {playMaker.assertFieldIsInteractive(field)}   
-                    interact = {board}
-                    selectedPiece = {selectedPiece}
-                    key={field} 
-                    notation={field}>
+                    interact={setFieldInteractivity(field, interactivity)}
+                    interactive ={interactivity}
+                    key={field} >
                         {piece &&  <ChessPieceJSX select={setSelectedPiece} piece={piece} />}
                 </ChessField>
             ) 
