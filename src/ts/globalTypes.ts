@@ -28,9 +28,13 @@ export interface Board {
     setPieces(white : string[], black :string[], player : string) : any;
 }
 
-
+export interface PieceData {
+    color : string,
+    type : string,
+    position : string
+}
 export interface BoardTable {
-    [field : string] : null | ChessPiece
+    [field : string] : null | PieceData
 }
 
 
