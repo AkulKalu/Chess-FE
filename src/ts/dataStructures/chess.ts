@@ -14,6 +14,7 @@ export class ChessBoardNotation {
         let fieldColumns = [...this.ranks].reverse().map( rank => this.files.map( file => `${file}${rank}` ) )
         return fieldColumns.reduce<string[]>( (fields, column) => [...fields, ...column] , [])
     }
+
     getAxisFieldNotation(x : number, y : number) {
         let file = this.files[x]
         let rank = this.ranks[y]
@@ -25,11 +26,13 @@ export class ChessPieceProperties {
     type : string
     position : string
     color : string
+    isPlayer : boolean
 
-    constructor(properties : PieceData) {
-        this.position = properties.position
-        this.color = properties.color
-        this.type = properties.type
+    constructor(piece : PieceData) {
+        this.position = piece.position
+        this.color = piece.color
+        this.type = piece.type
+        this.isPlayer = piece.isPlayer
     }
 
     get rank() {
@@ -40,11 +43,12 @@ export class ChessPieceProperties {
         return this.position[0]
     }
 
-    static dataFromNotation(notation : string, color : string = 'white') : PieceData {
+    static dataFromNotation(notation : string, color : string = 'white', isPlayer : boolean = false) : PieceData {
         return {
             type : notation[0],
             position : notation.slice(1),
-            color : color
+            color : color,
+            isPlayer : isPlayer,
         }
     }
 }

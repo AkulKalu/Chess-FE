@@ -2,22 +2,23 @@ import React, { useContext, useState,  } from 'react';
 import ChessField  from '../ChessField/ChessField'
 import ChessPieceJSX from '../ChessPieces/ChessPiece';
 import {checkFieldColor } from '../../helpers/functions';
-import { store } from '../../HOC/State/Provider'
+import {useSelector, useDispatch} from 'react-redux'
+import {boardSelector} from '../../app/boardSlice'
 import { ChessBoardNotation } from '../../ts/dataStructures/chess';
 import { ChessPiece } from '../../ts/classes/chess/chessPiece';
 import { ChessBoardScaner } from '../../ts/classes/chess/boardScaner';
+import {ChessPieceFactory} from "../../ts/factories/ChessPiece";
 
 
 const boardNotation = new ChessBoardNotation();
-
+const pieceFactory = new  ChessPieceFactory()
 
 
 export default function ChessBoard() {
     const [selectedPiece, setSelectedPiece] = useState<ChessPiece | null>(null);
-    let player = 'white'
-    const {board} = useContext(store);
+    const board = useSelector(boardSelector)
     const setBlackField = checkFieldColor();
-    const playMaker = new ChessBoardScaner(board.state);
+    const playMaker = new ChessBoardScaner(board);
     playMaker.getPlaysForPiece(selectedPiece!);
 
     const setFieldInteractivity = ( field : string, interactivity : boolean[] ) => {
@@ -39,10 +40,9 @@ export default function ChessBoard() {
             }
         }
     }
-
     
     const fields = boardNotation.getFieldNotations().map( (field, i) => {
-            let piece = board.state[field];
+            let piece = board[field] && pieceFactory.createPiece(board[field]!)
             let interactivity = playMaker.assertFieldIsInteractive(field)
             return (
                 <ChessField 

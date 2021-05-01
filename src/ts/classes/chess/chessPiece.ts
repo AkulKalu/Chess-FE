@@ -5,24 +5,14 @@ import { BasePattern } from "./movePatterns";
 export class ChessPiece implements Piece {
     protected _properties : ChessPieceProperties;
     protected movePattern : MovePattern;
-    protected player : boolean;
 
-    constructor(properties : ChessPieceProperties, player : boolean = false) {
+    constructor(properties : ChessPieceProperties) {
         this._properties = properties
         this.movePattern = new BasePattern();
-        this.player = player
     }
 
     getFieldsInRange() : string[][] {
         return this.movePattern.getFieldsInRange(this);
-    }
-
-    moveTo(field : string) {
-        this.properties.position = field
-    }
-
-    get isPlayer() {
-        return this.player
     }
 
     get boardY() {

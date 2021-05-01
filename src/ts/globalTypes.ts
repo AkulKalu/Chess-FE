@@ -31,7 +31,8 @@ export interface Board {
 export interface PieceData {
     color : string,
     type : string,
-    position : string
+    position : string,
+    isPlayer : boolean,
 }
 export interface BoardTable {
     [field : string] : null | PieceData
